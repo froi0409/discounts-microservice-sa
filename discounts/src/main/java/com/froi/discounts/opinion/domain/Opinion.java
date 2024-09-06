@@ -31,6 +31,9 @@ public class Opinion {
         if (dish != null && (hotel != null || roomCode != null)) {
             throw new OpinionException("Dish opinions must not have hotel or room code, or vice versa");
         }
+        if (dish == null && (hotel == null || roomCode == null)) {
+            throw new OpinionException("Opinion must have a dish or a hotel and room code");
+        }
         if (user == null) {
             throw new OpinionException("User must not be null");
         }
