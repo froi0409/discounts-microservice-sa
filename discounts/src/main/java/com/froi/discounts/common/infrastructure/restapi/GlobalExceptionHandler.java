@@ -3,6 +3,8 @@ package com.froi.discounts.common.infrastructure.restapi;
 import com.froi.discounts.common.exceptions.DuplicatedEntityException;
 import com.froi.discounts.common.exceptions.IllegalEnumException;
 import com.froi.discounts.common.exceptions.NetworkMicroserviceException;
+import com.froi.discounts.discount.domain.exceptions.DiscountException;
+import com.froi.discounts.opinion.domain.exceptions.OpinionException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +36,20 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalEnumException.class)
     public ResponseEntity<String> handleIllegalEnumException(IllegalEnumException e) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(e.getMessage());
+    }
+
+    @ExceptionHandler(OpinionException.class)
+    public ResponseEntity<String> handleOpinionException(OpinionException e) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(e.getMessage());
+    }
+
+    @ExceptionHandler(DiscountException.class)
+    public ResponseEntity<String> handleDiscountException(DiscountException e) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(e.getMessage());
