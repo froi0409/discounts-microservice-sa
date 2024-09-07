@@ -6,6 +6,7 @@ import com.froi.discounts.discount.domain.DiscountType;
 import com.froi.discounts.discount.domain.exceptions.DiscountException;
 import com.froi.discounts.discount.infrastructure.inputports.restapi.MakeDiscountsInputPort;
 import com.froi.discounts.discount.infrastructure.outputadapters.db.DiscountDbOutputAdapter;
+import com.froi.discounts.discount.infrastructure.outputadapters.restapi.DiscountRestOutputAdapter;
 import com.froi.discounts.opinion.infrastructure.outputadapters.db.OpinionDbOutputAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -14,13 +15,15 @@ import java.util.List;
 @UseCase
 public class MakeDiscountUseCase implements MakeDiscountsInputPort {
 
+    private DiscountRestOutputAdapter discountRestOutputAdapter;
     private DiscountDbOutputAdapter discountDbOutputAdapter;
     private OpinionDbOutputAdapter opinionDbOutputAdapter;
 
     @Autowired
-    public MakeDiscountUseCase(DiscountDbOutputAdapter discountDbOutputAdapter, OpinionDbOutputAdapter opinionDbOutputAdapter) {
+    public MakeDiscountUseCase(DiscountDbOutputAdapter discountDbOutputAdapter, OpinionDbOutputAdapter opinionDbOutputAdapter, DiscountRestOutputAdapter discountRestOutputAdapter) {
         this.discountDbOutputAdapter = discountDbOutputAdapter;
         this.opinionDbOutputAdapter = opinionDbOutputAdapter;
+        this.discountRestOutputAdapter = discountRestOutputAdapter;
     }
 
     @Override
@@ -53,7 +56,6 @@ public class MakeDiscountUseCase implements MakeDiscountsInputPort {
 
         validateCustomerDiscounts(request, discount);
 
-        // Crear el descuento
         return discountDbOutputAdapter.makeCustomerDiscount(discount);
     }
 
@@ -83,9 +85,9 @@ public class MakeDiscountUseCase implements MakeDiscountsInputPort {
 
     private void validateCustomerDiscounts(MakeCustomerDiscountRequest request, Discount discount) throws DiscountException {
         discount.validate();
-//        if (!opinionDbOutputAdapter.findAvailableCustomerDiscountByOpinions(request.getCustomerNit())) {
-//            throw new DiscountException(String.format("Customer %s is not available for discount. It should be in top 5 of the best customers.", request.getCustomerNit()));
-//        }
+        if (!discountRestOutputAdapter.findCustomerDiscountAvailability(request.getCustomerNit())) {
+            throw new DiscountException(String.format("Customer %s is not available for discount. It should be in top 5 of the best customers.", request.getCustomerNit()));
+        }
 
         List<Discount> discounts = discountDbOutputAdapter.findCustomerDiscountsBetweenDates(discount);
         if (!discounts.isEmpty()) {

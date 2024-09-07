@@ -34,9 +34,6 @@ public class Discount {
         if (!isUniqueDiscount()) {
             throw new DiscountException("Discount must have a dish or a hotel and room code or a user NIT");
         }
-        if (dishId == null && (hotelId == null || roomCode == null)) {
-            throw new DiscountException("Discount must have a dish or a hotel and room code");
-        }
     }
 
     public boolean isUniqueDiscount() {

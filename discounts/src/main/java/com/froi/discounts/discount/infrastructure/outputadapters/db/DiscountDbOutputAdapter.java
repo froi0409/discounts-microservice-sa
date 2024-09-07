@@ -9,6 +9,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @PersistenceAdapter
@@ -57,18 +58,33 @@ public class DiscountDbOutputAdapter implements MakeDiscountsOutputPort, FindDis
     }
 
     @Override
-    public Discount findRoomDiscount(String roomCode, String HotelId) {
-        return null;
+    public Discount findRoomDiscount(String roomCode, String HotelId, LocalDate date) {
+        Discount discount = roomDiscountDbEntityRepository.findFirstByRoomCodeAndHotelId(roomCode, HotelId, date)
+                .map(RoomDiscountDbEntity::toDomain)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Room discount with room code %s and hotel id %s not found", roomCode, HotelId)));
+        DiscountType discountType = findDiscountTypeById(discount.getDiscountType().getId().toString());
+        discount.setDiscountType(discountType);
+        return discount;
     }
 
     @Override
-    public Discount findDishDiscount(String dishCode) {
-        return null;
+    public Discount findDishDiscount(String dishId, LocalDate date) {
+        Discount discount = dishDiscountDbEntityRepository.findFirstByDishId(dishId, date)
+                .map(DishDiscountDbEntity::toDomain)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Dish discount with id %s not found", dishId)));
+        DiscountType discountType = findDiscountTypeById(discount.getDiscountType().getId().toString());
+        discount.setDiscountType(discountType);
+        return discount;
     }
 
     @Override
-    public Discount findCustomerDiscount(String customerNit) {
-        return null;
+    public Discount findCustomerDiscount(String customerNit, LocalDate date) {
+        Discount discount = customerDiscountDbEntityRepository.findFirstByCustomerNit(customerNit, date)
+                .map(CustomerDiscountDbEntity::toDomain)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Customer discount with NIT %s not found", customerNit)));
+        DiscountType discountType = findDiscountTypeById(discount.getDiscountType().getId().toString());
+        discount.setDiscountType(discountType);
+        return discount;
     }
 
     @Override

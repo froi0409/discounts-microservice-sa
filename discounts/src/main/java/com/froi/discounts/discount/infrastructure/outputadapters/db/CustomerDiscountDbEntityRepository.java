@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CustomerDiscountDbEntityRepository extends JpaRepository<CustomerDiscountDbEntity, String> {
@@ -14,4 +15,7 @@ public interface CustomerDiscountDbEntityRepository extends JpaRepository<Custom
             " AND (start_date BETWEEN :startDate AND :endDate" +
             " OR end_date BETWEEN :startDate AND :endDate)", nativeQuery = true)
     List<CustomerDiscountDbEntity> findDiscountsBetweenDates(@Param("customerNit") String customerNit, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+
+    @Query("SELECT c FROM CustomerDiscountDbEntity c WHERE c.customerNit = :customerNit AND :date BETWEEN c.startDate AND c.endDate")
+    Optional<CustomerDiscountDbEntity> findFirstByCustomerNit(@Param("customerNit") String customerNit, @Param("date") LocalDate date);
 }

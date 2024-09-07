@@ -15,4 +15,10 @@ public interface RoomDiscountDbEntityRepository extends JpaRepository<RoomDiscou
             " AND (start_date BETWEEN :startDate AND :endDate" +
             " OR end_date BETWEEN :startDate AND :endDate)", nativeQuery = true)
     List<RoomDiscountDbEntity> findDiscountsBetweenDates(@Param("roomCode") String roomCode, @Param("hotelId") String hotelId, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+
+    @Query("SELECT r FROM RoomDiscountDbEntity r WHERE r.roomCode = :roomCode AND r.hotelId = :hotelId AND :date BETWEEN r.startDate AND r.endDate")
+    Optional<RoomDiscountDbEntity> findFirstByRoomCodeAndHotelId(
+                                                                 @Param("roomCode") String roomCode,
+                                                                 @Param("hotelId") String hotelId,
+                                                                 @Param("date") LocalDate date);
 }
