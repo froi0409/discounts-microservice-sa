@@ -1,6 +1,8 @@
 package com.froi.discounts.discount.infrastructure.outputadapters.restapi;
 
 import com.froi.discounts.discount.infrastructure.outpuports.restapi.FindBillsInfoOutputPort;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -14,14 +16,23 @@ import java.net.http.HttpClient;
 @Component
 public class DiscountRestOutputAdapter implements FindBillsInfoOutputPort {
 
+    @Value("${payments.url}")
+    private String paymentsUrl;
+
+    private RestTemplate restTemplate;
+
+    @Autowired
+    public DiscountRestOutputAdapter(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
+
     @Override
     public boolean findCustomerDiscountAvailability(String customerId) {
-        String url = "http://localhost:8084/payments/v1/bills/isOneOfTheBest/" + customerId;
+        String url = paymentsUrl + "/v1/bills/isOneOfTheBest/" + customerId;
         return findEntity(url);
     }
 
     private boolean findEntity(String url) {
-        RestTemplate restTemplate = new RestTemplate();
         try {
             HttpHeaders headers = new HttpHeaders();
             HttpEntity<?> requestEntity = new HttpEntity<>(headers);
