@@ -46,7 +46,6 @@ public class OpinionRestOutputAdapter implements FindDishOutputPort, FindRoomOut
     }
 
     private boolean findEntity(String url) throws NetworkMicroserviceException {
-        RestTemplate restTemplate = new RestTemplate();
         try {
             HttpHeaders headers = new HttpHeaders();
             HttpEntity<?> requestEntity = new HttpEntity<>(headers);
